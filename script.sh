@@ -1,4 +1,3 @@
 #!/bin/sh
-g++ -c main.cpp
-g++ main.o -o tetris -lsfml-graphics -lsfml-window -lsfml-system
+g++ main.cpp objects/button/button.cpp -o tetris -lsfml-graphics -lsfml-window -lsfml-system 
 ./tetris

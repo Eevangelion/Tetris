@@ -1,53 +1,34 @@
-#include <../../SFML/Graphics.hpp>
-//#include "button.h"
 
-class Button {
-    sf::Texture normalTexture;
-    sf::Sprite normalSprite;
-    sf::Texture clickedTexture;
-    sf::Sprite clickedSprite;
-    sf::Sprite *currentSprite; 
-    sf::Text text;
-    sf::Font font;
-    bool currentState; // false if normal, true if clicked
-    friend class MainMenu;
-public:
-    Button(sf::String, sf::String, sf::String, sf::Vector2f);
-    Button();
-    void checkClick(sf::Vector2f);
-    void setState(bool);
-    sf::Sprite getSprite();
-    sf::Text getText();
-    //~Button();
-};
+#include "button.h"
+#include <../../SFML/Graphics.hpp>
 
 Button::Button(sf::String pathToNormal, sf::String pathToClicked, sf::String words, sf::Vector2f location) 
 {
-    if (!(this->normalTexture.loadFromFile(pathToNormal))) {
+    if (!(normalTexture.loadFromFile(pathToNormal))) {
         throw "Can't open image of normal button!";
     }
-    this->normalSprite.setTexture(normalTexture);
-    if (!(this->clickedTexture.loadFromFile(pathToClicked))) {
+    normalSprite.setTexture(normalTexture);
+    if (!(clickedTexture.loadFromFile(pathToClicked))) {
         throw "Can't open image of clicked button!";
     }
-    this->clickedSprite.setTexture(clickedTexture);
-    this->currentState = false;
-    this->normalSprite.setPosition(location);
-    this->clickedSprite.setPosition(location);
-    this->currentSprite = &normalSprite;
-    if (!(this->font.loadFromFile("fonts/Papernotes.ttf"))) {
+    clickedSprite.setTexture(clickedTexture);
+    currentState = false;
+    normalSprite.setPosition(location);
+    clickedSprite.setPosition(location);
+    currentSprite = &normalSprite;
+    if (!(font.loadFromFile("fonts/Papernotes.ttf"))) {
         throw "Can't open font!";
     }
-    this->text.setFont(font);
-    this->text.setString(words);
-    this->text.setCharacterSize(50);
-    this->text.setPosition(location.x + 25, location.y + 25);
-    this->text.setFillColor(sf::Color::Red);
+    text.setFont(font);
+    text.setString(words);
+    text.setCharacterSize(currentSprite->getLocalBounds().height / 2);
+    text.setPosition(location.x + (currentSprite->getLocalBounds().width - text.getLocalBounds().width) / 2, location.y + currentSprite->getLocalBounds().height / 4);
+    text.setFillColor(sf::Color::Black);
 }
 
 Button::Button() {}
 
-void Button::checkClick(sf::Vector2f mouseCoord) 
+bool Button::checkMove(sf::Vector2f mouseCoord) 
 {
     if (mouseCoord.x > currentSprite->getPosition().x && mouseCoord.x < (currentSprite->getPosition().x + currentSprite->getGlobalBounds().width)) 
     {
@@ -62,6 +43,7 @@ void Button::checkClick(sf::Vector2f mouseCoord)
     else {
         setState(false);
     }
+    return currentState;
 }
 
 void Button::setState(bool newState) {
@@ -73,6 +55,10 @@ void Button::setState(bool newState) {
     currentSprite = &normalSprite;
 }
 
+bool Button::getState() {
+    return currentState;
+}
+
 sf::Sprite Button::getSprite() {
     return *currentSprite;
 }
@@ -80,3 +66,5 @@ sf::Sprite Button::getSprite() {
 sf::Text Button::getText() {
     return text;
 }
+
+Button::~Button() {}

@@ -9,6 +9,7 @@
             "args": [
                 "-g",
                 "/home/ivan/projects/Tetris/main.cpp",
+                "/home/ivan/projects/Tetris/objects/button/button.cpp",
                 "-o",
                 "/home/ivan/projects/Tetris/tetris",
                 "-lsfml-graphics",
