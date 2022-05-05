@@ -1,7 +1,8 @@
 #include "../objects/button/button.h"
+#include "screen.h"
 #include <../SFML/Graphics.hpp>
 
-class MainMenu {
+class MainMenu : public Screen {
     Button* exitButton, *startNewGameButton, *resumeGameButton, *recordsButton;    
     sf::Sprite backgroundSprite;
     sf::Texture backgroundTexture;
@@ -25,14 +26,15 @@ public:
         screenTitle.setPosition((resolution.x - screenTitle.getGlobalBounds().width) / 2., resolution.y / 10.);
     }
 
-    void refreshMainMenuScreen(sf::RenderWindow&);
+    void refreshScreen(sf::RenderWindow&);
     void checkMouseMove(sf::Vector2f);
     short checkMouseClick(sf::Vector2f);
-    void resize(sf::Vector2u);
     bool getStateOfButton(short);
+    sf::String checkClickedButtons();
+    ~MainMenu() {}
 };
 
-void MainMenu::refreshMainMenuScreen(sf::RenderWindow& window) {
+void MainMenu::refreshScreen(sf::RenderWindow& window) {
     window.clear(sf::Color::Black);
 
     // Background
@@ -88,4 +90,16 @@ bool MainMenu::getStateOfButton(short type) {
         return false;
         break;
     }
+}
+
+sf::String MainMenu::checkClickedButtons() {
+    if (startNewGameButton->getState())
+    {
+        return "Start new game";
+    }
+    if (exitButton->getState()) 
+    {
+        return "Exit";
+    }
+    return "Do nothing";
 }
