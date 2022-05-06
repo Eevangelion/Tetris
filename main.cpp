@@ -34,6 +34,10 @@ int main()
                 else if (command == "Unpause") {
                     static_cast<GameScreen*>(screen)->changeStateOfPause();
                 }
+                else if (command == "Back to main menu") {
+                    // need to save data of game
+                    screen = new MainMenu(window.getSize());
+                }
             }
         }
     }

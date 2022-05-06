@@ -1,6 +1,5 @@
 #pragma once
 class Screen {
-protected:
     sf::Sprite backgroundSprite;
     sf::Texture backgroundTexture;
     sf::Vector2u resolution;

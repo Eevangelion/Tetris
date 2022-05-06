@@ -11,7 +11,7 @@ class Button {
     sf::Font font;
     bool currentState; // false if normal, true if clicked
 public:
-    Button(sf::String, sf::String, sf::String, sf::Vector2f);
+    Button(sf::String, sf::String, sf::String, sf::Vector2f, sf::Vector2f);
     Button();
     bool checkMove(sf::Vector2f);
     void setState(bool);

@@ -12,17 +12,34 @@ class MainMenu : public Screen {
 public:
     MainMenu(sf::Vector2u screenResolution) {
         resolution = screenResolution;
-        startNewGameButton = new Button(sf::String("models/button/buttonNormal.png"), sf::String("models/button/buttonClicked.png"), sf::String("START NEW GAME"), sf::Vector2f(resolution.x / 3., resolution.y / 2.));
-        resumeGameButton = new Button(sf::String("models/button/buttonNormal.png"), sf::String("models/button/buttonClicked.png"), sf::String("RESUME GAME"), sf::Vector2f(resolution.x / 3., 5. * resolution.y / 8));
-        recordsButton = new Button(sf::String("models/button/buttonNormal.png"), sf::String("models/button/buttonClicked.png"), sf::String("RECORDS"), sf::Vector2f(resolution.x / 3., 6. * resolution.y / 8));
-        exitButton = new Button(sf::String("models/button/buttonNormal.png"), sf::String("models/button/buttonClicked.png"), sf::String("EXIT GAME"), sf::Vector2f(resolution.x / 3., 7. * resolution.y / 8));
-        backgroundTexture.loadFromFile("models/screens/mainMenuScreen.jpg");
+        startNewGameButton = new Button(sf::String("models/button/buttonNormal.png"), 
+                                    sf::String("models/button/buttonClicked.png"), 
+                                    sf::String("START NEW GAME"), 
+                                    sf::Vector2f(resolution.x / 3., resolution.y / 2.), 
+                                    sf::Vector2f(resolution.x / 3, 1.5 * resolution.y / 16));
+        resumeGameButton = new Button(sf::String("models/button/buttonNormal.png"), 
+                                    sf::String("models/button/buttonClicked.png"), 
+                                    sf::String("RESUME GAME"), 
+                                    sf::Vector2f(resolution.x / 3., 5. * resolution.y / 8),
+                                    sf::Vector2f(resolution.x / 3, 1.5 * resolution.y / 16));
+        recordsButton = new Button(sf::String("models/button/buttonNormal.png"), 
+                                    sf::String("models/button/buttonClicked.png"), 
+                                    sf::String("RECORDS"), 
+                                    sf::Vector2f(resolution.x / 3., 6. * resolution.y / 8),
+                                    sf::Vector2f(resolution.x / 3, 1.5 * resolution.y / 16));
+        exitButton = new Button(sf::String("models/button/buttonNormal.png"),
+                                    sf::String("models/button/buttonClicked.png"), 
+                                    sf::String("EXIT GAME"), 
+                                    sf::Vector2f(resolution.x / 3., 7. * resolution.y / 8),
+                                    sf::Vector2f(resolution.x / 3, 1.5 * resolution.y / 16));
+        backgroundTexture.loadFromFile("models/screens/mainMenuScreen.png");
         backgroundSprite = sf::Sprite(backgroundTexture);
-        fontTitle.loadFromFile("fonts/Papernotes Bold.ttf");
+        backgroundSprite.setScale(sf::Vector2f(resolution.x / backgroundSprite.getLocalBounds().width, resolution.y / backgroundSprite.getLocalBounds().height));
+        fontTitle.loadFromFile("fonts/UchronyRoman-Regular-FFP.ttf");
         screenTitle.setString("Tetris");
         screenTitle.setFont(fontTitle);
         screenTitle.setCharacterSize(resolution.y / 8.);
-        screenTitle.setFillColor(sf::Color::Black);
+        screenTitle.setFillColor(sf::Color::White);
         screenTitle.setPosition((resolution.x - screenTitle.getGlobalBounds().width) / 2., resolution.y / 10.);
     }
 
