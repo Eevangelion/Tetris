@@ -65,7 +65,7 @@ void GameScreen::refreshScreen(sf::RenderWindow& window) {
     window.draw(pauseButton->getSprite());
     window.draw(pauseButton->getText());
 
-    // Pause sprite if paused
+    // Pause sprite and buttons if paused
     if (pauseState == true) {
         window.draw(pauseSprite);
         window.draw(unpauseButton->getSprite());

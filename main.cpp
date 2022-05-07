@@ -2,7 +2,7 @@
 #include "screen/screen.h"
 #include "screen/mainMenu.cpp"
 #include "screen/gameScreen.cpp"
-
+#include "objects/tetromino/tetromino1.cpp"
 
 int main()
 {
