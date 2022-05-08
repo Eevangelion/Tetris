@@ -2,7 +2,6 @@
 #include "screen/screen.h"
 #include "screen/mainMenu.cpp"
 #include "screen/gameScreen.cpp"
-#include "objects/tetromino/tetromino1.cpp"
 
 int main()
 {
@@ -39,6 +38,12 @@ int main()
                     screen = new MainMenu(window.getSize());
                 }
             }
+            else if (event.type == sf::Event::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) 
+                static_cast<GameScreen*>(screen)->moveTetrominoLeft();
+            else if (event.type == sf::Event::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) 
+                static_cast<GameScreen*>(screen)->moveTetrominoRight();
+            else if (event.type == sf::Event::KeyPressed && (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space)))
+                static_cast<GameScreen*>(screen)->rotateTetromino();
         }
     }
     return 0;

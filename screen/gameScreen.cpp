@@ -1,5 +1,6 @@
 #include "../objects/button/button.h"
 #include "screen.h"
+#include "../objects/tetromino/tetrominoGenerator.h"
 #include <../SFML/Graphics.hpp>
 
 
@@ -13,6 +14,12 @@ class GameScreen : public Screen {
     sf::Text pausedTitle;
     sf::Font fontPaused;
     bool pauseState;
+    TetrominoGenerator* generator;
+    Tetromino* currentTetromino;
+    double lastTime;
+    sf::Texture emptyBlockTexture, blockTexture;
+    sf::Sprite** gameArea;
+    bool** filled;
 public:
     GameScreen(sf::Vector2u screenResolution) {
         resolution = screenResolution;
@@ -45,11 +52,40 @@ public:
         pausedTitle.setCharacterSize(resolution.y / 10.);
         pausedTitle.setFillColor(sf::Color::White);
         pausedTitle.setPosition((resolution.x - pausedTitle.getGlobalBounds().width) / 2., 2.5 * resolution.y / 8.);
+        generator = new TetrominoGenerator(sf::Vector2f(0.5 * resolution.x, (resolution.y - 0.6 * resolution.x) / 2 + 0.6 * resolution.x / 20), 
+                                        sf::Vector2f(0.03 * resolution.x, 0.03 * resolution.x));
+        emptyBlockTexture.loadFromFile("models/block/emptyBlock.png");
+        blockTexture.loadFromFile("models/block/block.png");
+        gameArea = new sf::Sprite*[20];
+        filled = new bool*[20];
+        for (int i = 0; i < 20; ++i) {
+            gameArea[i] = new sf::Sprite[10];
+            filled[i] = new bool[10];
+        }
+        gameArea[0][0].setPosition(sf::Vector2f(0.35 * resolution.x, (resolution.y - 0.6 * resolution.x) / 2));
+        for (int i = 0; i < 20; ++i) {
+            if (i > 0) gameArea[i][0].setPosition(sf::Vector2f(gameArea[i - 1][0].getPosition().x, gameArea[i - 1][0].getPosition().y + 0.03 * resolution.x));
+            for (int j = 1; j < 10; ++j) {
+                gameArea[i][j].setPosition(sf::Vector2f(gameArea[i][j - 1].getPosition().x + 0.03 * resolution.x, gameArea[i][j - 1].getPosition().y));
+            }
+        }
+        for (int i = 0; i < 20; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                filled[i][j] = false;
+                gameArea[i][j].setTexture(emptyBlockTexture);
+                gameArea[i][j].setScale(sf::Vector2f(0.03 * resolution.x / gameArea[i][j].getLocalBounds().width, 0.03 * resolution.x / gameArea[i][j].getLocalBounds().height));
+            }
+        }
+        currentTetromino = generator->nextTetromino();
+        lastTime = time(0);
     }
     void refreshScreen(sf::RenderWindow&);
     void checkMouseMove(sf::Vector2f);
     short checkMouseClick(sf::Vector2f);
     bool getStateOfButton(short);
+    void moveTetrominoLeft();
+    void moveTetrominoRight();
+    void rotateTetromino();
     sf::String checkClickedButtons();
     void changeStateOfPause();
     ~GameScreen() {}
@@ -65,6 +101,40 @@ void GameScreen::refreshScreen(sf::RenderWindow& window) {
     window.draw(pauseButton->getSprite());
     window.draw(pauseButton->getText());
 
+    for (int i = 0; i < 20; ++i) {
+        for (int j = 0; j < 10; ++j) {
+            window.draw(gameArea[i][j]);
+        }
+    }
+
+
+    double currentTime = time(0);
+    if (pauseState == false) {
+        if (currentTime - lastTime >= 1.) {
+            currentTetromino->moveDown();
+            sf::Vector2i* coord = currentTetromino->getCoordinates();
+            bool ok = true;
+            for (int i = 0; i < 4; ++i) {
+                if (coord[i].y >= 20 || filled[coord[i].y][coord[i].x]) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (!ok) {
+                currentTetromino->moveUp();
+                for (int i = 0; i < 4; ++i) {
+                    filled[coord[i].y][coord[i].x] = true;
+                    gameArea[coord[i].y][coord[i].x].setTexture(blockTexture);
+                }
+                lastTime = currentTime;
+                currentTetromino = generator->nextTetromino();
+                return;
+            }
+        }
+    }
+    lastTime = currentTime;
+    sf::Sprite* blocks = currentTetromino->getSpriteBlocks();
+    for (int i = 0; i < 4; ++i) window.draw(blocks[i]);
     // Pause sprite and buttons if paused
     if (pauseState == true) {
         window.draw(pauseSprite);
@@ -115,6 +185,40 @@ bool GameScreen::getStateOfButton(short type) {
 }
 
 
+void GameScreen::moveTetrominoLeft() {
+    currentTetromino->moveLeft();
+    sf::Vector2i* coord = currentTetromino->getCoordinates(); 
+    bool ok = true;
+    for (int i = 0; i < 4; ++i) {
+        if (coord[i].x < 0) {
+            ok = false;
+            break;
+        }
+    }
+    if (!ok) {
+        currentTetromino->moveRight();
+    }
+}
+
+void GameScreen::moveTetrominoRight() {
+    currentTetromino->moveRight();
+    sf::Vector2i* coord = currentTetromino->getCoordinates(); 
+    bool ok = true;
+    for (int i = 0; i < 4; ++i) {
+        if (coord[i].x >= 10) {
+            ok = false;
+            break;
+        }
+    }
+    if (!ok) {
+        currentTetromino->moveLeft();
+    }
+}
+
+void GameScreen::rotateTetromino() {
+    currentTetromino->rotate();
+}
+
 sf::String GameScreen::checkClickedButtons() {
     if (!pauseState && pauseButton->getState())
     {
@@ -135,3 +239,4 @@ void GameScreen::changeStateOfPause() {
     pauseButton->setState(false);
     unpauseButton->setState(false);
 }
+
