@@ -6,13 +6,14 @@ protected:
     sf::Vector2i* coordinates;
     sf::Texture textureBlock;
     sf::Vector2f centerLocation;
+    sf::Vector2i centerCoordinates;
     sf::Vector2f blockSize;
     short typeOfRotate;
     short typeOfTetromino;
     double speed;
-    const double maxSpeed = 2.0;
+    const double maxSpeed = 10.0;
 public:
-    Tetromino() : speed(1.0), typeOfRotate(0) {}
+    Tetromino() : speed(3.0), typeOfRotate(0) {}
     Tetromino(sf::Vector2f, sf::Vector2f, short);
     void rotate();
     void speedUp(); 
@@ -22,5 +23,7 @@ public:
     void moveUp();
     sf::Vector2i* getCoordinates();
     sf::Sprite* getSpriteBlocks();
-    ~Tetromino() {}
+    double getSpeed();
+    void normalSpeed();
+    ~Tetromino();
 };

@@ -48,7 +48,12 @@ public:
     short checkMouseClick(sf::Vector2f);
     bool getStateOfButton(short);
     sf::String checkClickedButtons();
-    ~MainMenu() {}
+    ~MainMenu() {
+        delete exitButton;
+        delete startNewGameButton;
+        delete resumeGameButton;
+        delete recordsButton;
+    }
 };
 
 void MainMenu::refreshScreen(sf::RenderWindow& window) {
@@ -113,6 +118,10 @@ sf::String MainMenu::checkClickedButtons() {
     if (startNewGameButton->getState())
     {
         return "Start new game";
+    }
+    if (resumeGameButton->getState()) 
+    {
+        return "Resume";
     }
     if (exitButton->getState()) 
     {

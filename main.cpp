@@ -8,6 +8,8 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1024, 768), "Tetris");
     window.setVerticalSyncEnabled(true);
     Screen* screen = new MainMenu(window.getSize());
+    bool screenMode = 0; // 0 - main, 1 - game
+    GameScreen* lastGame = nullptr;
     while (window.isOpen()) 
     {
         screen->refreshScreen(window);
@@ -21,28 +23,45 @@ int main()
                 screen->checkMouseMove(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
             else if (event.type == sf::Event::MouseButtonPressed && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 sf::String command = screen->checkClickedButtons();
-                if (command == "Start new game") {
+                if (screenMode == 0 && command == "Start new game") {
                     screen = new GameScreen(window.getSize());
+                    screenMode = 1;
                 }
-                else if (command == "Exit") {
+                else if (screenMode == 0 && command == "Resume") {
+                    if (lastGame) {
+                        screen = std::move(lastGame);
+                        screenMode = 1;
+                    }
+                }
+                else if (screenMode == 0 && command == "Exit") {
                     window.close();
                 }
-                else if (command == "Pause") {
+                else if (screenMode == 1 && command == "Pause") {
                     static_cast<GameScreen*>(screen)->changeStateOfPause();
                 }
-                else if (command == "Unpause") {
+                else if (screenMode == 1 && command == "Unpause") {
                     static_cast<GameScreen*>(screen)->changeStateOfPause();
                 }
-                else if (command == "Back to main menu") {
+                else if (screenMode == 1 && command == "Back to main menu") {
                     // need to save data of game
+                    lastGame = std::move(static_cast<GameScreen*>(screen));
                     screen = new MainMenu(window.getSize());
+                    screenMode = 0;
                 }
             }
-            else if (event.type == sf::Event::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) 
+            if (screenMode == 1) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+                    static_cast<GameScreen*>(screen)->speedUp();
+                else 
+                    static_cast<GameScreen*>(screen)->speedDown();
+            } 
+            if (screenMode == 1 && event.type == sf::Event::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
                 static_cast<GameScreen*>(screen)->moveTetrominoLeft();
-            else if (event.type == sf::Event::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) 
+            }
+            else if (screenMode == 1 && event.type == sf::Event::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                 static_cast<GameScreen*>(screen)->moveTetrominoRight();
-            else if (event.type == sf::Event::KeyPressed && (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space)))
+            }
+            if (screenMode == 1 && event.type == sf::Event::KeyPressed && (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space)))
                 static_cast<GameScreen*>(screen)->rotateTetromino();
         }
     }
